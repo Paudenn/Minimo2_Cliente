@@ -18,12 +18,14 @@ import java.util.List;
 
 public class RecyclerViewAdapt extends RecyclerView.Adapter<RecyclerViewAdapt.MyViewHolder> {
 
-    private List<User> listaUsers;
+
+    private List<Repos> reposList;
     private Context context;
 
-    public RecyclerViewAdapt(Context ct, List<User> users){
+    public RecyclerViewAdapt(Context ct, List<Repos> repos){
         this.context = ct;
-        listaUsers = users;
+
+        reposList = repos;
     }
     @NonNull
     @Override
@@ -36,26 +38,29 @@ public class RecyclerViewAdapt extends RecyclerView.Adapter<RecyclerViewAdapt.My
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.usuario.setText(listaUsers.get(position).getLogin());
-        Picasso.with(context).load(listaUsers.get(position).getAvatar_url()).into(holder.avatar);
+        holder.repoName.setText(reposList.get(position).getName());
+        holder.language.setText(reposList.get(position).getLanguage());
+
     }
 
     @Override
     public int getItemCount() {
-        return listaUsers.size();
+        return reposList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView avatar;
-        public TextView usuario;
+
+        public TextView repoName;
+        public TextView language;
         public View layout;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             layout = itemView;
-            avatar = (ImageView) itemView.findViewById(R.id.imageFollower);
-            usuario = (TextView) itemView.findViewById(R.id.followerName);
+
+            repoName = (TextView) itemView.findViewById(R.id.followerName);
+            language = (TextView) itemView.findViewById(R.id.languageText);
         }
     }
 }

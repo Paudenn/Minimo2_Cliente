@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pruebaminimo2.models.*;
 
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView repositoriesText;
     private TextView followingText;
+    private TextView followersText;
     private android.widget.ImageView ImageView;
 
     @Override
@@ -46,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         ImageView = findViewById(R.id.imageProfile);
         repositoriesText = findViewById(R.id.repos);
         followingText = findViewById(R.id.following);
+        followersText = findViewById(R.id.follow);
+        @SuppressLint("WrongConstant") SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_APPEND);
+        String s1 = sh.getString("name", "");
+
 
         Bundle extras = getIntent().getExtras();
         user = extras.getString("user");
@@ -83,11 +90,12 @@ public class MainActivity extends AppCompatActivity {
                 final User user = response.body();
                 Log.d("following i repos ", String.valueOf(user.getFollowing()) + ", " +String.valueOf(user.getPublic_repos()));
                 followingText.setText(String.valueOf(user.getFollowing()));
+                followersText.setText(String.valueOf(user.getFollowers()));
                 repositoriesText.setText(String.valueOf(user.getPublic_repos()));
                 Picasso.with(getApplicationContext()).load(user.getAvatar_url()).into(ImageView);
                 showProgress(false);
 
-                cargarFollowers();
+                cargarRepos();
             }
 
             @Override
@@ -98,21 +106,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void cargarFollowers(){
+    public void cargarRepos(){
+
         showProgress(true);
         APIgit = retrofit.create(GithubAPI.class);
-        Call<List<User>> call = APIgit.listaFollowers(user);
-        call.enqueue(new Callback<List<User>>() {
+        Call<List<Repos>> call = APIgit.listaRepos(user);
+        call.enqueue(new Callback<List<Repos>>() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+            public void onResponse(Call<List<Repos>> call, Response<List<Repos>> response) {
 
                 if(response.isSuccessful()){
-                    Log.d("onResponse", "lsita ha llegado");
-                    List<User> listaUsers = response.body();
+                    Log.d("onResponse", "lista ha llegado");
+                    List<Repos> listaRepos = response.body();
                     recyclerView = findViewById(R.id.followers);
                     // https://developer.android.com/guide/topics/ui/layout/recyclerview#java + video
 
-                    RecyclerViewAdapt myAdapter = new RecyclerViewAdapt(getApplicationContext(), listaUsers);
+                    RecyclerViewAdapt myAdapter = new RecyclerViewAdapt(getApplicationContext(), listaRepos);
                     recyclerView.setAdapter(myAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                     showProgress(false);
@@ -120,10 +129,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-
+            public void onFailure(Call<List<Repos>> call, Throwable t) {
+                Log.d("onFailure", "lista no ha llegado");
             }
         });
+
+
+
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.pruebaminimo2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -61,7 +62,8 @@ public class InicialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("click", "ok");
-
+                SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
+                SharedPreferences.Editor myEdit = sharedPreferences.edit();
                 Call<User> call = APIgit.infoUser(user.getText().toString());
                 Log.d("User",user.getText().toString());
                 call.enqueue(new Callback<User>() {
@@ -71,6 +73,8 @@ public class InicialActivity extends AppCompatActivity {
                         if(response.isSuccessful()){
                             Log.d("onResponse", "tenemos user");
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            myEdit.putString("name", user.getText().toString());
+                            myEdit.commit();
                             intent.putExtra("user", user.getText().toString());
                             startActivity(intent);
                         }

@@ -15,4 +15,7 @@ public interface GithubAPI {
     @GET("/users/{username}/followers")
     Call<List<User>> listaFollowers(@Path("username") String user);
 
+    @GET("/users/{username}/repos")
+    Call<List<Repos>> listaRepos(@Path("username") String user);
+
 }
